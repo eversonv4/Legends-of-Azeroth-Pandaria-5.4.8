@@ -1590,8 +1590,8 @@ public:
             return handler->SendError("Invalid digsite id: %u", digsiteId);
 
         if (!player->SpawnDigsite(digsiteId))
-            return handler->SendError("You already have digsite %u (%s)", digsiteEntry->Id, digsiteEntry->SiteName[handler->GetSessionDbcLocale()]);
-        handler->PSendSysMessage("Digsite %u (%s) was spawned", digsiteEntry->Id, digsiteEntry->SiteName[handler->GetSessionDbcLocale()]);
+            return handler->SendError("You already have digsite %u (%s)", digsiteEntry->Id, digsiteEntry->SiteName);
+        handler->PSendSysMessage("Digsite %u (%s) was spawned", digsiteEntry->Id, digsiteEntry->SiteName);
         return true;
     }
 

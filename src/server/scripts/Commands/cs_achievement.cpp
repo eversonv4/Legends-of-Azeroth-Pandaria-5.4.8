@@ -134,7 +134,8 @@ public:
         if (!achievement)
             return handler->SendError("Achievement not found!");
 
-        handler->SendSysMessage(achievement->Name[handler->GetSessionDbcLocale()]);
+        // AchievementEntry::Name is a single already-locale-resolved string, not an array.
+        handler->SendSysMessage(achievement->Name);
         handler->PSendSysMessage("Achievement ID: %u", achievement->ID);
         if (achievement->Flags & ACHIEVEMENT_FLAG_ACCOUNT)
             handler->SendSysMessage("Account wide");

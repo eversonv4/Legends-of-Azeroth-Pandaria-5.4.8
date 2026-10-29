@@ -1159,22 +1159,22 @@ t.dt = function(s,talkType)
     return t 
 end
 
---创建公共聊天事件
-CreateLuaEvent(function() 
-    local n = t.d[math.random(#t.d)] 
-    SendWorldMessage(string.format("|cFFFFC0C0[世]|r|cff%s|Hplayer:%s|h[%s]|h|r:|cFFFFC0C0%s|r",t.cc[math.random(#t.cc)],n,n,t:dt("talk")))
-end,
-talk_time[1],talk_time[2],
-0)
+--创建公共聊天事件 (desativado: spam de chat falso em chinês, indesejado neste servidor)
+-- CreateLuaEvent(function()
+--     local n = t.d[math.random(#t.d)]
+--     SendWorldMessage(string.format("|cFFFFC0C0[世]|r|cff%s|Hplayer:%s|h[%s]|h|r:|cFFFFC0C0%s|r",t.cc[math.random(#t.cc)],n,n,t:dt("talk")))
+-- end,
+-- talk_time[1],talk_time[2],
+-- 0)
 
---创建公会聊天事件
-CreateLuaEvent(
-function() 
-    local n = t.d[math.random(#t.d)] 
-    SendWorldMessage(string.format("|cFF40FF40[会]|Hplayer:%s|h[%s]|h:%s|r",n,n,t:dt("guild_talk")))
-end,
-guild_talk_time[1],guild_talk_time[2],
-0)
+--创建公会聊天事件 (desativado: spam de chat falso em chinês, indesejado neste servidor)
+-- CreateLuaEvent(
+-- function()
+--     local n = t.d[math.random(#t.d)]
+--     SendWorldMessage(string.format("|cFF40FF40[会]|Hplayer:%s|h[%s]|h:%s|r",n,n,t:dt("guild_talk")))
+-- end,
+-- guild_talk_time[1],guild_talk_time[2],
+-- 0)
 
 
 --处理密语,邀请封包

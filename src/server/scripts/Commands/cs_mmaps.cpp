@@ -389,7 +389,8 @@ public:
                 if (entry != -1)
                     skip = (sWorld->getBoolConfig(CONFIG_ENABLE_MMAPS) && !DisableMgr::IsDisabledFor(DISABLE_TYPE_MMAP_MAP, entry, nullptr)) != disable;
                 if (MapEntry const* map = sMapStore.LookupEntry(entry))
-                    ss << "Map - " << map->name[DEFAULT_LOCALE];
+                    // MapEntry::name is a single already-locale-resolved string, not an array.
+                    ss << "Map - " << map->name;
                 break;
             case DISABLE_TYPE_MMAP_ZONE:
                 if (!entry)
@@ -397,7 +398,7 @@ public:
                 if (entry)
                     skip = (sWorld->getBoolConfig(CONFIG_ENABLE_MMAPS) && !DisableMgr::IsDisabledFor(DISABLE_TYPE_MMAP_ZONE, entry, nullptr)) != disable;
                 if (AreaTableEntry const* area = sAreaTableStore.LookupEntry(entry))
-                    ss << "Area - " << area->area_name[DEFAULT_LOCALE];
+                    ss << "Area - " << area->area_name;
                 break;
             case DISABLE_TYPE_MMAP_AREA:
                 if (!entry)
@@ -405,7 +406,7 @@ public:
                 if (entry)
                     skip = (sWorld->getBoolConfig(CONFIG_ENABLE_MMAPS) && !DisableMgr::IsDisabledFor(DISABLE_TYPE_MMAP_AREA, entry, nullptr)) != disable;
                 if (AreaTableEntry const* zone = sAreaTableStore.LookupEntry(entry))
-                    ss << "Area - " << zone->area_name[DEFAULT_LOCALE];
+                    ss << "Area - " << zone->area_name;
                 break;
             case DISABLE_TYPE_MMAP_CREATURE:
                 if (!entry)

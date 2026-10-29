@@ -308,18 +308,16 @@ public:
             {
                 FactionState const* factionState = target ? target->GetReputationMgr().GetState(factionEntry) : NULL;
 
+                // FactionEntry::name is a single already-locale-resolved string (not a
+                // per-locale array like ItemSparseEntry::Name), so it must be compared as a
+                // whole string, not indexed by locale -- indexing it (name[i]) only ever
+                // compared single characters of the name, so no multi-character search term
+                // could ever match.
                 bool match = false;
-                for (int32 i = 0; i < TOTAL_LOCALES; ++i)
+                if (*factionEntry->name)
                 {
-                    if (*factionEntry->name)
-                    {
-                        name = factionEntry->name[i];
-                        if (!Utf8FitTo(name, wNamePart))
-                            continue;
-
-                        match = true;
-                        break;
-                    }
+                    name = factionEntry->name;
+                    match = Utf8FitTo(name, wNamePart);
                 }
 
                 if (!match)
@@ -446,7 +444,12 @@ public:
                     }
                 }
             }
-            else
+
+            // Fall back to the item_template name whenever the client-side Item-sparse.db2
+            // entry is missing OR doesn't match (e.g. a custom/overridden item whose entry ID
+            // collides with an unrelated retail item at that same ID in the extracted client
+            // data) so .lookup item still finds items purely from the world database.
+            if (!match)
             {
                 name = itr->second.Name1;
                 match = Utf8FitTo(name, wNamePart);

@@ -1,0 +1,90 @@
+services:
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASS:-azerothcore}
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${DB_PASS:-azerothcore}"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  authserver:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    image: loa-pandaria:latest
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASS: ${DB_PASS:-azerothcore}
+    command: ["authserver"]
+    ports:
+      - "3724:3724"
+    volumes:
+      - ./docker/etc:/azerothcore/etc
+      - ./docker/data/authserver:/azerothcore/run/authserver
+
+  worldserver:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    image: loa-pandaria:latest
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASS: ${DB_PASS:-azerothcore}
+      ELUNA_ENABLED: "1"
+    command: ["worldserver"]
+    ports:
+      - "8085:8085"
+    volumes:
+      - ./docker/etc:/azerothcore/etc
+      - ./docker/data/worldserver:/azerothcore/run/worldserver
+      - ./contrib/lua_scripts:/azerothcore/run/worldserver/lua_scripts
+    # stdin_open (no tty) keeps an open-but-silent pipe on stdin: once the world DB is
+    # already bootstrapped, entrypoint.sh execs worldserver inheriting this, so its CLI
+    # console thread blocks on readline() instead of busy-spinning at 100% CPU on a
+    # closed stdin. On a fresh/empty DB, entrypoint.sh instead redirects stdin from
+    # /dev/null for that exec, so the DB auto-setup "create it? [yes/no]" prompt still
+    # gets instant EOF (defaults to yes) rather than hanging on this same open pipe.
+    stdin_open: true
+
+  # One-off helper to extract maps/vmaps/mmaps from your WoW 5.4.8 client.
+  # Not started by `docker compose up`; run explicitly, e.g.:
+  #   docker compose run --rm tools extract-data.sh
+  tools:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+      args:
+        WITH_TOOLS: "1"
+    image: loa-pandaria-tools:latest
+    profiles: ["tools"]
+    entrypoint: ["/bin/bash"]
+    working_dir: /client
+    volumes:
+      - ${CLIENT_DIR:-./docker/client}:/client
+      - ./docker/data/worldserver/Data:/data
+      - ./docker/extract-data.sh:/usr/local/bin/extract-data.sh:ro
+
+volumes:
+  db_data:

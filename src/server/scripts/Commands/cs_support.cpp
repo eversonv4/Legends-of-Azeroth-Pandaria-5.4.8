@@ -2862,14 +2862,14 @@ public:
                 {
                     if (rep->reputationListID < 0)
                     {
-                        handler->PSendSysMessage(LANG_COMMAND_FACTION_NOREP_ERROR, rep->name[handler->GetSessionDbcLocale()], repId);
+                        handler->PSendSysMessage(LANG_COMMAND_FACTION_NOREP_ERROR, rep->name, repId);
                         handler->SetSentErrorMessage(true);
                         return false;
                     }
 
                     player->GetReputationMgr().SetOneFactionReputation(rep, repValue, false);
                     player->GetReputationMgr().SendState(player->GetReputationMgr().GetState(rep));
-                    handler->PSendSysMessage("Reputation with faction %s (%u) changed to %u for player %s (%u).", rep->name[handler->GetSessionDbcLocale()], repId, repValue, handler->GetNameLink(player).c_str(), guid.GetCounter());
+                    handler->PSendSysMessage("Reputation with faction %s (%u) changed to %u for player %s (%u).", rep->name, repId, repValue, handler->GetNameLink(player).c_str(), guid.GetCounter());
                 }
                 else
                     handler->PSendSysMessage("Error. Faction %u not found.", repId);
@@ -2902,7 +2902,7 @@ public:
                         CharacterDatabase.PExecute("UPDATE character_reputation SET standing = {} WHERE guid = {} AND faction = {} AND flags = flags | 1", repValue, guid.GetCounter(), repId);
                     else
                         CharacterDatabase.PExecute("INSERT IGNORE INTO character_reputation (guid, faction, standing, flags) VALUES ({}, {}, {}, 17)", guid.GetCounter(), repId, repValue);
-                    handler->PSendSysMessage("Reputation with faction %s (%u) changed to %u for player %s (%u).", rep->name[handler->GetSessionDbcLocale()], repId, repValue, handler->GetNameLink(player).c_str(), guid.GetCounter());
+                    handler->PSendSysMessage("Reputation with faction %s (%u) changed to %u for player %s (%u).", rep->name, repId, repValue, handler->GetNameLink(player).c_str(), guid.GetCounter());
                 }
                 else
                     handler->PSendSysMessage("Error. Faction %u not found.", repId);
@@ -2939,7 +2939,7 @@ public:
                     uint32 value = player->GetReputation(rep->ID);
                     if (value >= 40000000)
                         value = 0;
-                    handler->PSendSysMessage("Reputation with faction %s (%u) for player %s (%u).", rep->name[handler->GetSessionDbcLocale()], value, handler->GetNameLink(player).c_str(), guid.GetCounter());
+                    handler->PSendSysMessage("Reputation with faction %s (%u) for player %s (%u).", rep->name, value, handler->GetNameLink(player).c_str(), guid.GetCounter());
                 }
                 else
                     handler->PSendSysMessage("Error. Faction %u not found.", atoi(repStr));
@@ -2953,7 +2953,7 @@ public:
                 {
                     QueryResult result = CharacterDatabase.PQuery("SELECT faction FROM character_reputation WHERE guid = {} AND faction = {}", guid.GetCounter(), rep->ID);
                     int32 value = result && (*result)[0].GetUInt32();
-                    handler->PSendSysMessage("Reputation with faction %s (%u) is %u for player %s (%u).", rep->name[handler->GetSessionDbcLocale()], rep->ID, value, name.c_str(), guid.GetCounter());
+                    handler->PSendSysMessage("Reputation with faction %s (%u) is %u for player %s (%u).", rep->name, rep->ID, value, name.c_str(), guid.GetCounter());
                 }
                 else
                     handler->PSendSysMessage("Error. Faction %u not found.", atoi(repStr));
@@ -2989,7 +2989,7 @@ public:
                         value = 0;
 
                     if (value)
-                        handler->PSendSysMessage("- faction %s (%u) - value %u", rep->name[handler->GetSessionDbcLocale()], rep->ID, value);
+                        handler->PSendSysMessage("- faction %s (%u) - value %u", rep->name, rep->ID, value);
                 }
             }
         }
@@ -3014,7 +3014,7 @@ public:
                     continue;
 
                 if (auto rep = sFactionStore.LookupEntry(faction))
-                    handler->PSendSysMessage("- faction %s (%u)", rep->name[handler->GetSessionDbcLocale()], standing);
+                    handler->PSendSysMessage("- faction %s (%u)", rep->name, standing);
                 else
                     handler->PSendSysMessage("Something gone wrong 2.");
             }
@@ -3346,7 +3346,7 @@ public:
                 {
                     int32 precision = cur->Flags & CURRENCY_FLAG_HIGH_PRECISION ? CURRENCY_PRECISION : 1;
                     player->ModifyCurrency(cur->ID, currencyAmount * precision, true, true, true);
-                    handler->PSendSysMessage("Currency %s (%u) changed on %u for player %s (%u).", cur->Name[handler->GetSessionDbcLocale()], cur->ID, currencyAmount, handler->GetNameLink(player).c_str(), guid.GetCounter());
+                    handler->PSendSysMessage("Currency %s (%u) changed on %u for player %s (%u).", cur->Name, cur->ID, currencyAmount, handler->GetNameLink(player).c_str(), guid.GetCounter());
                 }
                 else
                     handler->PSendSysMessage("Error. Currency %u not found.", currencyId);
@@ -3396,7 +3396,7 @@ public:
                         }
                         CharacterDatabase.PExecute("INSERT IGNORE INTO character_currency (guid, currency, total_count, week_count, season_count, flags) VALUES ({}, {}, {}, 0, 0, 0)", guid.GetCounter(), cur->ID, currencyAmount);
                     }
-                    handler->PSendSysMessage("Currency %s (%u) changed on %u for player %s (%u).", cur->Name[handler->GetSessionDbcLocale()], cur->ID, currencyAmountOut, name.c_str(), guid.GetCounter());
+                    handler->PSendSysMessage("Currency %s (%u) changed on %u for player %s (%u).", cur->Name, cur->ID, currencyAmountOut, name.c_str(), guid.GetCounter());
                 }
                 else
                     handler->PSendSysMessage("Error. Currency %u not found.", currencyId);
@@ -3431,9 +3431,9 @@ public:
                 if (auto cur = sCurrencyTypesStore.LookupEntry(atoi(curStr)))
                 {
                     if (uint32 currencyAmount = player->GetCurrency(cur->ID, true))
-                        handler->PSendSysMessage("Player %s (%u) has currency %s (%u) - amount %u.", handler->GetNameLink(player).c_str(), guid.GetCounter(), cur->Name[handler->GetSessionDbcLocale()], cur->ID, currencyAmount);
+                        handler->PSendSysMessage("Player %s (%u) has currency %s (%u) - amount %u.", handler->GetNameLink(player).c_str(), guid.GetCounter(), cur->Name, cur->ID, currencyAmount);
                     else
-                        handler->PSendSysMessage("Player %s (%u) hasn't currency %s (%u).", handler->GetNameLink(player).c_str(), guid.GetCounter(), cur->Name[handler->GetSessionDbcLocale()], cur->ID);
+                        handler->PSendSysMessage("Player %s (%u) hasn't currency %s (%u).", handler->GetNameLink(player).c_str(), guid.GetCounter(), cur->Name, cur->ID);
                 }
                 else
                     handler->PSendSysMessage("Error. Currency %u not found.", atoi(curStr));
@@ -3449,10 +3449,10 @@ public:
                     if (QueryResult result = CharacterDatabase.PQuery("SELECT currency FROM character_currency WHERE guid = {} AND currency = {}", guid.GetCounter(), cur->ID))
                     {
                         uint64 currencyAmount = (*result)[0].GetUInt32();
-                        handler->PSendSysMessage("Player %s (%u) has currency %s (%u) - amount %lu.", name.c_str(), guid.GetCounter(), cur->Name[handler->GetSessionDbcLocale()], cur->ID, currencyAmount);
+                        handler->PSendSysMessage("Player %s (%u) has currency %s (%u) - amount %lu.", name.c_str(), guid.GetCounter(), cur->Name, cur->ID, currencyAmount);
                     }
                     else
-                        handler->PSendSysMessage("Player %s (%u) hasn't currency %s (%u).", name.c_str(), guid.GetCounter(), cur->Name[handler->GetSessionDbcLocale()], cur->ID);
+                        handler->PSendSysMessage("Player %s (%u) hasn't currency %s (%u).", name.c_str(), guid.GetCounter(), cur->Name, cur->ID);
                 }
                 else
                     handler->PSendSysMessage("Error. Currency %u not found.", atoi(curStr));
@@ -3482,14 +3482,14 @@ public:
             for (uint32 i = 0; i < sCurrencyTypesStore.GetNumRows(); i++)
                 if (auto cur = sCurrencyTypesStore.LookupEntry(i))
                     if (uint32 currencyAmount = player->GetCurrency(cur->ID, true))
-                        handler->PSendSysMessage("%s (%u) - amount %u.", cur->Name[handler->GetSessionDbcLocale()], cur->ID, currencyAmount);
+                        handler->PSendSysMessage("%s (%u) - amount %u.", cur->Name, cur->ID, currencyAmount);
         }
         else
         {
             for (uint32 i = 0; i < sCurrencyTypesStore.GetNumRows(); i++)
                 if (auto cur = sCurrencyTypesStore.LookupEntry(i))
                     if (QueryResult result = CharacterDatabase.PQuery("SELECT currency FROM character_currency WHERE guid = {} AND currency = {}", guid.GetCounter(), cur->ID))
-                        handler->PSendSysMessage("%s (%u) - amount %u.", cur->Name[handler->GetSessionDbcLocale()], cur->ID, (*result)[0].GetUInt32());
+                        handler->PSendSysMessage("%s (%u) - amount %u.", cur->Name, cur->ID, (*result)[0].GetUInt32());
         }
         return true;
     }

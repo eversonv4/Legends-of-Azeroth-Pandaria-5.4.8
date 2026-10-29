@@ -428,7 +428,8 @@ void WorldSession::HandleWhoOpcode(WorldPacket& recvData)
 
         std::string aname;
         if (AreaTableEntry const* areaEntry = sAreaTableStore.LookupEntry(zoneId))
-            aname = areaEntry->area_name[GetSessionDbcLocale()];
+            // AreaTableEntry::area_name is a single already-locale-resolved string, not an array.
+            aname = areaEntry->area_name;
 
         bool s_show = true;
         for (uint32 i = 0; i < wordCount; ++i)

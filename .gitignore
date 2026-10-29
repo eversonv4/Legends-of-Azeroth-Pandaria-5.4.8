@@ -9,3 +9,14 @@ build/
 /bin
 bin/
 obj/
+
+# Local docker-compose overrides (CLIENT_DIR path, DB_PASS, etc.)
+.env
+
+# Docker runtime data (generated confs, logs, extracted Data/, client, world dump)
+docker/data/**
+!docker/data/**/.gitkeep
+docker/etc/**
+!docker/etc/**/.gitkeep
+docker/client/**
+!docker/client/**/.gitkeep

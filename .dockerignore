@@ -1,0 +1,21 @@
+.git
+.github
+.vs
+.vscode*
+.idea
+build/
+bin/
+bin-clang/
+out/
+obj/
+*.ini
+
+# Legacy/huge SQL dumps not used by the build or by the DB auto-updater
+sql/old/
+
+# Docker-managed runtime data (created on the host next to docker-compose.yml)
+docker/data/
+docker/etc/
+docker/client/
+docker/build.log
+*.log

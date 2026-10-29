@@ -2044,11 +2044,12 @@ public:
         AreaTableEntry const* area = sAreaTableStore.LookupEntry(areaId);
         if (area)
         {
-            areaName = area->area_name[handler->GetSessionDbcLocale()];
+            // AreaTableEntry::area_name is a single already-locale-resolved string, not an array.
+            areaName = area->area_name;
 
             AreaTableEntry const* zone = sAreaTableStore.LookupEntry(area->ParentAreaID);
             if (zone)
-                zoneName = zone->area_name[handler->GetSessionDbcLocale()];
+                zoneName = zone->area_name;
         }
 
         if (target)
@@ -3410,7 +3411,9 @@ public:
             auto classEntry = specEntry ? sChrClassesStore.LookupEntry(specEntry->classId) : nullptr;
             if (specEntry && classEntry)
                 if (itemSpec->HasSpecializationId(specEntry->Id))
-                    handler->PSendSysMessage("%s %s", classEntry->name[handler->GetSessionDbcLocale()], specEntry->Name[handler->GetSessionDbcLocale()]);
+                    // ChrClassesEntry::name and ChrSpecializationEntry::Name are single
+                    // already-locale-resolved strings, not arrays.
+                    handler->PSendSysMessage("%s %s", classEntry->name, specEntry->Name);
         }
         return true;
     }
@@ -3486,7 +3489,7 @@ public:
         if (!loot)
             return handler->SendError("No personal loot for %u", id);
 
-        handler->PSendSysMessage("Personal loot lootid: %u for spec: %s", id, specEntry->Name[handler->GetSessionDbcLocale()]);
+        handler->PSendSysMessage("Personal loot lootid: %u for spec: %s", id, specEntry->Name);
 
         std::string name;
         for (auto&& itr : loot)
